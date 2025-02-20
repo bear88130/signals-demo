@@ -1,11 +1,32 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterModule } from '@angular/router';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  standalone: true,
+  imports: [RouterModule, MatSidenavModule, MatListModule, MatToolbarModule, MatIconModule],
+  template: `
+    <mat-sidenav-container class="h-screen">
+      <mat-sidenav #sidenav mode="side" opened class="w-64 p-4">
+        <div class="text-xl font-bold mb-4">Signals Demo</div>
+        <mat-nav-list>
+          <a mat-list-item routerLink="/lazy-signal">toLazySignal Demo</a>
+          <a mat-list-item routerLink="/derived-from">derivedFrom Demo</a>
+          <a mat-list-item routerLink="/observable-signal">toObservableSignal Demo</a>
+          <a mat-list-item routerLink="/derived-async">derivedAsync Demo</a>
+          <a mat-list-item routerLink="/connect">connect Demo</a>
+          <a mat-list-item routerLink="/signal-slice">signalSlice Demo</a>
+        </mat-nav-list>
+      </mat-sidenav>
+      <mat-sidenav-content class="p-4">
+        <router-outlet></router-outlet>
+      </mat-sidenav-content>
+    </mat-sidenav-container>
+  `,
 })
 export class AppComponent {
   title = 'signals-demo';
