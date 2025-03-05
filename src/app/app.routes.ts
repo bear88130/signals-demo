@@ -22,8 +22,28 @@ export const routes: Routes = [
     loadComponent: () => import('./features/connect/connect.component').then(m => m.ConnectComponent)
   },
   {
+    path: 'connect-ex',
+    loadComponent: () => import('./features/connect/connect-ex.component').then(m => m.ConnectExComponent)
+  },
+  {
     path: 'signal-slice',
     loadComponent: () => import('./features/signal-slice/signal-slice.component').then(m => m.SignalSliceComponent)
+  },
+  {
+    path: 'linked-signal',
+    loadComponent: () => import('./features/linked-signal-demo/linked-signal-demo.component').then(m => m.LinkedSignalDemoComponent)
+  },
+  {
+    path: 'timeout-demo',
+    loadComponent: () => import('./features/signal-demos/timeout-demo.component').then(m => m.TimeoutDemoComponent)
+  },
+  {
+    path: 'interval-demo',
+    loadComponent: () => import('./features/signal-demos/interval-demo.component').then(m => m.IntervalDemoComponent)
+  },
+  {
+    path: 'promise-demo',
+    loadComponent: () => import('./features/signal-demos/promise-demo.component').then(m => m.PromiseDemoComponent)
   },
   {
     path: '',

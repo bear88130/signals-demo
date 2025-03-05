@@ -1,11 +1,12 @@
-import { Component, OnDestroy, effect, signal } from '@angular/core';
+import { Component, effect, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { FormsModule } from '@angular/forms';
 import { DataService, Todo } from '../../shared/services/data.service';
-import { Subject, debounceTime, takeUntil } from 'rxjs';
+import { Subject, debounceTime } from 'rxjs';
+import { connect } from 'ngxtension/connect';
 
 @Component({
   selector: 'app-connect',
@@ -16,7 +17,7 @@ import { Subject, debounceTime, takeUntil } from 'rxjs';
       <mat-card-header>
         <mat-card-title>Connect Signal Demo</mat-card-title>
         <mat-card-subtitle>
-          展示如何使用 effect 連接 signal 與組件，實現自動保存功能
+          展示如何使用 connect 連接 signal 與組件，實現自動保存功能
         </mat-card-subtitle>
       </mat-card-header>
       <mat-card-content class="p-4">
@@ -49,53 +50,35 @@ import { Subject, debounceTime, takeUntil } from 'rxjs';
     </mat-card>
   `
 })
-export class ConnectComponent implements OnDestroy {
+export class ConnectComponent {
   todos = signal<Todo[]>([]);
   autoSave = true;
   saveStatus = signal<string>('');
-  private destroy$ = new Subject<void>();
   private todoChanges$ = new Subject<void>();
 
   constructor(private dataService: DataService) {
-    this.loadTodos();
-    this.setupAutoSave();
+    // 連接 todos 信號與資料服務
+    connect(this.todos, this.dataService.getTodos());
 
-    // 使用 effect 監聽 todos 的變化
+    // 設置自動保存
+    connect(this.saveStatus, this.todoChanges$.pipe(debounceTime(1000)), () => {
+      return '儲存中...';
+    });
+
+    // 監聽 todos 的變化
     effect(() => {
       const currentTodos = this.todos();
       console.log('Todos updated:', currentTodos);
 
       if (this.autoSave) {
         this.todoChanges$.next();
-      }
-    });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
-  private setupAutoSave(): void {
-    this.todoChanges$
-      .pipe(
-        debounceTime(1000), // 延遲 1 秒後才觸發保存
-        takeUntil(this.destroy$)
-      )
-      .subscribe(() => {
-        this.saveStatus.set('儲存中...');
         // 模擬保存到後端的延遲
         setTimeout(() => {
           this.saveStatus.set('已自動儲存');
           setTimeout(() => this.saveStatus.set(''), 2000);
         }, 1000);
-      });
-  }
-
-  private loadTodos(): void {
-    this.dataService.getTodos()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(todos => this.todos.set(todos));
+      }
+    });
   }
 
   toggleAutoSave(): void {
@@ -108,10 +91,9 @@ export class ConnectComponent implements OnDestroy {
   }
 
   toggleTodo(id: number): void {
-    this.dataService.toggleTodo(id)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        this.loadTodos();
-      });
+    this.dataService.toggleTodo(id).subscribe(() => {
+      // 重新載入待辦事項列表
+      this.dataService.getTodos().subscribe(todos => this.todos.set(todos));
+    });
   }
 }

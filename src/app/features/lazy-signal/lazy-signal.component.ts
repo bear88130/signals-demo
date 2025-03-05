@@ -11,34 +11,13 @@ import { toSignal } from '@angular/core/rxjs-interop';
   standalone: true,
   imports: [CommonModule, MatCardModule, MatButtonModule],
   template: `
-    <mat-card class="max-w-2xl mx-auto">
-      <mat-card-header>
-        <mat-card-title>Lazy Signal Demo</mat-card-title>
-        <mat-card-subtitle>
-          展示如何使用 Signal 延遲載入數據，提高效能
-        </mat-card-subtitle>
-      </mat-card-header>
-      <mat-card-content class="p-4">
-        @if (todos()) {
-          <div class="space-y-2">
-            @for (todo of todos(); track todo.id) {
-              <div class="flex items-center gap-2 p-2 border rounded">
-                <span [class.line-through]="todo.completed">{{ todo.title }}</span>
-                <button mat-button (click)="toggleTodo(todo.id)">
-                  {{ todo.completed ? '取消完成' : '標記完成' }}
-                </button>
-              </div>
-            }
-          </div>
-        } @else {
-          <p>載入中...</p>
-        }
-      </mat-card-content>
-    </mat-card>
-
-    <button mat-button (click)="showSignals.set(!showSignals())">
+  <div class="flex justify-center">
+    <button color="primary" mat-stroked-button (click)="showSignals.set(!showSignals())">
       {{ showSignals() ? '隱藏' : '顯示' }}
     </button>
+  </div>
+
+
 
     <!-- <p>todosWithSignals: {{ todosWithSignals() | json }}</p>
     <p>todosWithLazySignal: {{ todosWithLazySignal() | json }}</p> -->
@@ -52,9 +31,9 @@ import { toSignal } from '@angular/core/rxjs-interop';
         </mat-card-subtitle>
       </mat-card-header>
       <mat-card-content class="p-4">
-        @if (todosWithLazySignal()) {
+        @if (todosWithLazySignal(); as todosWithLazySignal) {
           <div class="space-y-2">
-            @for (todo of todosWithLazySignal(); track todo.id) {
+            @for (todo of todosWithLazySignal; track todo.id) {
               <div class="flex items-center gap-2 p-2 border rounded">
                 <span [class.line-through]="todo.completed">{{ todo.title }}</span>
                 <button mat-button (click)="toggleTodo(todo.id)">
@@ -101,8 +80,12 @@ export class LazySignalComponent implements OnInit {
   showSignals = signal(false);
 
   private dataService = inject(DataService);
-  todosWithSignals = toSignal(this.dataService.getTodosDelay(), {initialValue: []});
-  todosWithLazySignal = toLazySignal(this.dataService.getTodosDelay(), {initialValue: []});
+
+  todosWithSignals = toSignal(this.dataService.getTodosDelay(),
+  {initialValue: []});
+
+  todosWithLazySignal = toLazySignal(this.dataService.getTodosDelay(),
+  {initialValue: []});
 
   constructor() {
     this.loadTodos();

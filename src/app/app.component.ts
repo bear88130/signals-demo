@@ -19,7 +19,12 @@ import { MatIconModule } from '@angular/material/icon';
           <a mat-list-item routerLink="/observable-signal">toObservableSignal Demo</a>
           <a mat-list-item routerLink="/derived-async">derivedAsync Demo</a>
           <a mat-list-item routerLink="/connect">connect Demo</a>
+          <a mat-list-item routerLink="/connect-ex">connect ex Demo</a>
           <a mat-list-item routerLink="/signal-slice">signalSlice Demo</a>
+          <a mat-list-item routerLink="/linked-signal">linkedSignal Demo</a>
+          <a mat-list-item routerLink="/timeout-demo">timeout Demo</a>
+          <a mat-list-item routerLink="/interval-demo">interval Demo</a>
+          <a mat-list-item routerLink="/promise-demo">promise Demo</a>
         </mat-nav-list>
       </mat-sidenav>
       <mat-sidenav-content class="p-4">
