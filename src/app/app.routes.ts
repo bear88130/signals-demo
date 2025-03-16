@@ -2,6 +2,10 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
+    path: 'signal',
+    loadComponent: () => import('./features/signal/signal-demo/signal-demo.component').then(m => m.SignalDemoComponent)
+  },
+  {
     path: 'lazy-signal',
     loadComponent: () => import('./features/lazy-signal/lazy-signal.component').then(m => m.LazySignalComponent)
   },

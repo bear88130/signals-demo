@@ -14,6 +14,7 @@ import { MatIconModule } from '@angular/material/icon';
       <mat-sidenav #sidenav mode="side" opened class="w-64 p-4">
         <div class="text-xl font-bold mb-4">Signals Demo</div>
         <mat-nav-list>
+          <a mat-list-item routerLink="/signal">Signal Demo</a>
           <a mat-list-item routerLink="/lazy-signal">toLazySignal Demo</a>
           <a mat-list-item routerLink="/derived-from">derivedFrom Demo</a>
           <a mat-list-item routerLink="/observable-signal">toObservableSignal Demo</a>
