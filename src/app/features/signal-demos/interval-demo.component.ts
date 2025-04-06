@@ -1,6 +1,12 @@
 import { Component, signal, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
+interface User {
+  name: string;
+  age: number;
+  lastUpdate: Date;
+}
+
 @Component({
   selector: 'app-interval-demo',
   standalone: true,
@@ -28,6 +34,26 @@ import { CommonModule } from '@angular/common';
           {{ normalRunning ? '停止' : '開始' }} 普通計時器
         </button>
       </div>
+
+      <div class="mb-6">
+        <h3 class="font-semibold mb-2">修改物件屬性</h3>
+        <p>使用者: {{ userObject().name }}, 年齡: {{ userObject().age }}, 更新時間: {{ userObject().lastUpdate | date:'medium' }}</p>
+        <button (click)="toggleObjectPropertyUpdate()"
+                [class]="objectPropertyRunning ? 'bg-red-500' : 'bg-purple-500'"
+                class="text-white px-4 py-2 rounded">
+          {{ objectPropertyRunning ? '停止' : '開始' }} 修改物件屬性
+        </button>
+      </div>
+
+      <div class="mb-6">
+        <h3 class="font-semibold mb-2">替換整個物件</h3>
+        <p>使用者: {{ replaceObject().name }}, 年齡: {{ replaceObject().age }}, 更新時間: {{ replaceObject().lastUpdate | date:'medium' }}</p>
+        <button (click)="toggleObjectReplacement()"
+                [class]="objectReplaceRunning ? 'bg-red-500' : 'bg-yellow-500'"
+                class="text-white px-4 py-2 rounded">
+          {{ objectReplaceRunning ? '停止' : '開始' }} 替換整個物件
+        </button>
+      </div>
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,6 +66,16 @@ export class IntervalDemoComponent implements OnDestroy {
   normalTimer = 0;
   normalRunning = false;
   private normalInterval?: ReturnType<typeof setInterval>;
+
+  // 物件修改範例
+  userObject = signal<User>({ name: '小明', age: 25, lastUpdate: new Date() });
+  objectPropertyRunning = false;
+  private objectPropertyInterval?: ReturnType<typeof setInterval>;
+
+  // 物件替換範例
+  replaceObject = signal<User>({ name: '小華', age: 30, lastUpdate: new Date() });
+  objectReplaceRunning = false;
+  private objectReplaceInterval?: ReturnType<typeof setInterval>;
 
   toggleSignalTimer() {
     if (this.signalRunning()) {
@@ -65,12 +101,53 @@ export class IntervalDemoComponent implements OnDestroy {
     }
   }
 
+  toggleObjectPropertyUpdate() {
+    if (this.objectPropertyRunning) {
+      clearInterval(this.objectPropertyInterval);
+      this.objectPropertyRunning = false;
+    } else {
+      this.objectPropertyInterval = setInterval(() => {
+        // 直接修改物件屬性
+        this.userObject.update(user => {
+          user.age += 1;
+          user.lastUpdate = new Date();
+          return user;
+        });
+      }, 1000);
+      this.objectPropertyRunning = true;
+    }
+  }
+
+  toggleObjectReplacement() {
+    if (this.objectReplaceRunning) {
+      clearInterval(this.objectReplaceInterval);
+      this.objectReplaceRunning = false;
+    } else {
+      this.objectReplaceInterval = setInterval(() => {
+        // 創建新物件進行替換
+        const currentUser = this.replaceObject();
+        this.replaceObject.set({
+          name: currentUser.name,
+          age: currentUser.age + 1,
+          lastUpdate: new Date()
+        });
+      }, 1000);
+      this.objectReplaceRunning = true;
+    }
+  }
+
   ngOnDestroy() {
     if (this.signalInterval) {
       clearInterval(this.signalInterval);
     }
     if (this.normalInterval) {
       clearInterval(this.normalInterval);
+    }
+    if (this.objectPropertyInterval) {
+      clearInterval(this.objectPropertyInterval);
+    }
+    if (this.objectReplaceInterval) {
+      clearInterval(this.objectReplaceInterval);
     }
   }
 }
