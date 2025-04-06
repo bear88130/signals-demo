@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { signal, computed, effect, untracked, WritableSignal } from '@angular/core';
+import { delay, of } from 'rxjs';
 
 interface User {
   id: number;
@@ -80,6 +81,8 @@ interface User {
           <h3>Untracked Effect</h3>
           <p>計數: {{ untrackedCount() }}</p>
           <button (click)="incrementMoreTimes(untrackedCount)">+1</button>
+          <!-- 顯示 code 是什麼 -->
+          <p>untracked(() => this.untrackedCount())</p>
         </div>
       </section>
 
@@ -89,14 +92,14 @@ interface User {
 
         <!-- 修改物件屬性 -->
         <div class="demo-box">
-          <h3>方法一：修改物件屬性</h3>
+          <h3>方法一：call api 後 修改物件屬性，不替換 object reference (他會因為 事件 刷新 UI)</h3>
           <p>使用者資訊: {{ userInfo().name }}, {{ userInfo().age }} 歲</p>
           <button (click)="updateUserAge()">年齡 +1 (修改屬性)</button>
         </div>
 
         <!-- 替換為新物件 -->
         <div class="demo-box">
-          <h3>方法二：替換為新物件</h3>
+          <h3>方法二：call api 後 替換為新物件，替換 object reference</h3>
           <p>使用者資訊: {{ userInfo2().name }}, {{ userInfo2().age }} 歲</p>
           <button (click)="replaceUserObject()">年齡 +1 (新物件)</button>
         </div>
@@ -155,7 +158,7 @@ export class SignalDemoComponent {
   // 步驟一：基本 Signal 展示
   basicCount = signal(undefined);
   initCount = signal(100);
-  // 比對相同值，不會更新
+  // 比對到相同值，不會更新
   equalCount = signal(0, { equal: (a, b) => {
     console.log('equalCount', a, b);
     return a === 5}
@@ -195,10 +198,13 @@ export class SignalDemoComponent {
     });
 
     // untracked effect
+    // 不追蹤不代表沒有改變，由別個 signal 觸發，一樣會改變
     effect(() => {
       console.log('untracked effect');
-      const count = untracked(() => this.untrackedCount());
-      this.untrackedColor = count % 2 === 0 ? '#e6ffe6' : '#ffe6e6';
+      const effectCountCount = this.effectCount();
+      const untrackedCount = untracked(() => this.untrackedCount());
+      console.log('untracked count', untrackedCount);
+      this.untrackedColor = untrackedCount % 2 === 0 ? '#e6ffe6' : '#ffe6e6';
     });
 
     // // 物件更新監聽
@@ -228,16 +234,22 @@ export class SignalDemoComponent {
   // 事件本身也會觸發更新
   // 方法一：修改物件屬性
   updateUserAge() {
-    const current = this.userInfo();
-    current.age += 1; // 修改物件的屬性
-    this.userInfo.set(current);
+    // call 一個 非同步的 observer 會觸發更新
+    of(1).pipe(delay(500)).subscribe(() => {
+      const current = this.userInfo();
+      current.age += 1; // 修改物件的屬性
+      this.userInfo.set(current);
+    });
+
   }
 
   // 方法二：替換為新物件
   replaceUserObject() {
-    this.userInfo2.update(user => {
-      // 建立一個新物件並返回
-      return { ...user, age: user.age + 1 };
+    of(1).pipe(delay(500)).subscribe(() => {
+      this.userInfo2.update(user => {
+        // 建立一個新物件並返回
+        return { ...user, age: user.age + 1 };
+      });
     });
   }
 }

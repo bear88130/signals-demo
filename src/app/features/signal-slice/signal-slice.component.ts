@@ -7,9 +7,15 @@ import { DataService, Todo } from '../../shared/services/data.service';
 import { signalSlice } from 'ngxtension/signal-slice';
 import { Observable, startWith, switchMap } from 'rxjs';
 
+enum STATUS {
+  all = 'all',
+  active = 'active',
+  completed = 'completed',
+}
+
 interface TodoState {
   todos: Todo[];
-  currentFilter: 'all' | 'active' | 'completed';
+  currentFilter: STATUS;
 }
 
 @Component({
@@ -81,7 +87,7 @@ interface TodoState {
 export class SignalSliceComponent {
   private initialState: TodoState = {
     todos: [],
-    currentFilter: 'all',
+    currentFilter: STATUS.all,
   };
 
   state;
@@ -89,19 +95,24 @@ export class SignalSliceComponent {
   constructor(private dataService: DataService) {
 
     this.state = signalSlice({
+      // Signal Slice 的初始狀態
+      // 這裡的 initialState 是一個物件，包含 todos 和 currentFilter 屬性
       initialState: this.initialState,
+      // 資料取得來源
+      // 這裡的 sources 是一個陣列，包含一個 Observable，這個 Observable 會在組件初始化時載入 todos
       sources: [
         // Load todos from service
         this.dataService.getTodos().pipe(
           startWith([]),
-          switchMap((todos) => [{ todos }])
+          switchMap((todos) => [{ todos, currentFilter: STATUS.active }])
         ),
       ],
+      // 狀態變更方法
       actionSources: {
         // Update filter action
         updateFilter: (
           state,
-          action$: Observable<'all' | 'active' | 'completed'>
+          action$: Observable<STATUS>
         ) =>
           action$.pipe(
             switchMap((filter) => [
@@ -119,6 +130,7 @@ export class SignalSliceComponent {
           );
         },
       },
+      // 用於取得資料
       selectors: (state) => ({
         filteredTodos: () => {
           const filter = state().currentFilter;

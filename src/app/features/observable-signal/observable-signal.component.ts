@@ -25,7 +25,7 @@ import { toObservable } from '@angular/core/rxjs-interop';
   ],
   // changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-      <button mat-raised-button (click)="toggleIsHidden()">{{isHidden() ? '顯示' : '隱藏'}}</button>
+      <button mat-raised-button (click)="toggleIsHidden()">{{isHidden() ? '隱藏' : '顯示'}}</button>
 
       @if (isHidden()) {
         <mat-card class="max-w-2xl mx-auto">
