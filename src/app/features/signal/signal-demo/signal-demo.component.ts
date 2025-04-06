@@ -1,11 +1,18 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { signal, computed, effect, untracked, WritableSignal } from '@angular/core';
+
+interface User {
+  id: number;
+  name: string;
+  age: number;
+}
 
 @Component({
   selector: 'app-signal-demo',
   standalone: true,
   imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="demo-container">
       <!-- 步驟一：基本 Signal 展示 -->
@@ -73,6 +80,32 @@ import { signal, computed, effect, untracked, WritableSignal } from '@angular/co
           <h3>Untracked Effect</h3>
           <p>計數: {{ untrackedCount() }}</p>
           <button (click)="incrementMoreTimes(untrackedCount)">+1</button>
+        </div>
+      </section>
+
+      <!-- 步驟四：物件 Signal 展示 -->
+      <section class="demo-section">
+        <h2>步驟四：物件 Signal 展示</h2>
+
+        <!-- 修改物件屬性 -->
+        <div class="demo-box">
+          <h3>方法一：修改物件屬性</h3>
+          <p>使用者資訊: {{ userInfo().name }}, {{ userInfo().age }} 歲</p>
+          <button (click)="updateUserAge()">年齡 +1 (修改屬性)</button>
+        </div>
+
+        <!-- 替換為新物件 -->
+        <div class="demo-box">
+          <h3>方法二：替換為新物件</h3>
+          <p>使用者資訊: {{ userInfo2().name }}, {{ userInfo2().age }} 歲</p>
+          <button (click)="replaceUserObject()">年齡 +1 (新物件)</button>
+        </div>
+
+        <!-- 物件比較結果 -->
+        <div class="demo-box">
+          <h3>物件更新效能比較</h3>
+          <p>方法一 (修改屬性) 更新次數: {{ updateCount() }}</p>
+          <p>方法二 (新物件) 更新次數: {{ replaceCount() }}</p>
         </div>
       </section>
     </div>
@@ -147,6 +180,12 @@ export class SignalDemoComponent {
   untrackedCount = signal(0);
   untrackedColor = 'white';
 
+  // 步驟四：物件 Signal 展示
+  userInfo = signal<User>({ id: 1, name: '小明', age: 25 });
+  userInfo2 = signal<User>({ id: 2, name: '小華', age: 25 });
+  updateCount = signal(0);
+  replaceCount = signal(0);
+
   constructor() {
     // 基本 effect
     effect(() => {
@@ -161,6 +200,19 @@ export class SignalDemoComponent {
       const count = untracked(() => this.untrackedCount());
       this.untrackedColor = count % 2 === 0 ? '#e6ffe6' : '#ffe6e6';
     });
+
+    // // 物件更新監聽
+    effect(() => {
+      // 只要 userInfo 的任何屬性改變，這個 effect 就會觸發
+      console.log('userInfo changed', this.userInfo());
+      this.updateCount.update(count => count + 1);
+    });
+
+    effect(() => {
+      // 只要 userInfo2 的任何屬性改變，這個 effect 就會觸發
+      console.log('userInfo2 changed', this.userInfo2());
+      this.replaceCount.update(count => count + 1);
+    });
   }
 
   increment(signal: WritableSignal<number | undefined>) {
@@ -171,5 +223,21 @@ export class SignalDemoComponent {
       signal.update((value: number | undefined) => value ? value + 1 : 1);
       signal.update((value: number | undefined) => value ? value + 1 : 1);
       signal.update((value: number | undefined) => value ? value + 1 : 1);
+  }
+
+  // 事件本身也會觸發更新
+  // 方法一：修改物件屬性
+  updateUserAge() {
+    const current = this.userInfo();
+    current.age += 1; // 修改物件的屬性
+    this.userInfo.set(current);
+  }
+
+  // 方法二：替換為新物件
+  replaceUserObject() {
+    this.userInfo2.update(user => {
+      // 建立一個新物件並返回
+      return { ...user, age: user.age + 1 };
+    });
   }
 }
