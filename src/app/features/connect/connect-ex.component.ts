@@ -1,4 +1,4 @@
-import { Component, computed, effect, signal } from '@angular/core';
+import { Component, computed, effect, inject, Injector, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -25,7 +25,9 @@ import { connect } from 'ngxtension/connect';
     </div>
   `
 })
-export class ConnectExComponent {
+export class ConnectExComponent implements OnInit {
+  private injector = inject(Injector);
+
   state = signal({
     user: {
       firstName: 'chau',
@@ -55,9 +57,18 @@ export class ConnectExComponent {
 
     // logs: first name changed, chau
 
-    // sometimes later
     this.lastName$.next('Tran');
 
     // `firstName()` effect won't be triggered because we only update `lastName`
+  }
+
+  ngOnInit() {
+    // connect(this.state, this.lastName$, (prev, lastName) => ({
+    //   user: { ...prev.user, lastName },
+    // }));
+
+    // connect(this.state, this.lastName$, (prev, lastName) => ({
+    //   user: { ...prev.user, lastName },
+    // }), this.injector);
   }
 }

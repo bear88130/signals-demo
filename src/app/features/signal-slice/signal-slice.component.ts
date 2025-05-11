@@ -85,12 +85,12 @@ interface TodoState {
   `,
 })
 export class SignalSliceComponent {
+  state;
+
   private initialState: TodoState = {
     todos: [],
     currentFilter: STATUS.all,
   };
-
-  state;
 
   constructor(private dataService: DataService) {
 

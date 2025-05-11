@@ -1,4 +1,4 @@
-import { Component, signal, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
+import { Component, signal, OnDestroy, ChangeDetectionStrategy, inject, NgZone, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 interface User {
@@ -59,8 +59,12 @@ interface User {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IntervalDemoComponent implements OnDestroy {
-  signalTimer = signal(0);
+  private zone = inject(NgZone);
+  private cdk = inject(ChangeDetectorRef);
+
   signalRunning = signal(false);
+  signalTimer = signal(0);
+
   private signalInterval?: ReturnType<typeof setInterval>;
 
   normalTimer = 0;
@@ -96,6 +100,7 @@ export class IntervalDemoComponent implements OnDestroy {
     } else {
       this.normalInterval = setInterval(() => {
         this.normalTimer += 1;
+        // this.cdk.markForCheck();
       }, 1000);
       this.normalRunning = true;
     }
