@@ -1,13 +1,33 @@
-SignalsDemo
+# SignalsDemo
 本專案為 Angular Signals 應用範例，展示 Signals 在狀態管理、非同步處理、RxJS 整合等多種情境下的實作方式。每個功能模組皆有對應的教學與實作，適合學習與參考。
 
-目錄結構
-主要技術
-Angular 19（含 Signals API）
-RxJS
-ngxtension（signalSlice、connect 等輔助函式）
-Tailwind CSS
-各功能模組簡介
+## 目錄結構
+```
+src/
+  app/
+    features/
+      connect/             // connect signal 與 observable 的範例
+      derived-async/       // derivedAsync 非同步信號範例
+      derived-from/        // derivedFrom 結合多個 signal/observable
+      lazy-signal/         // lazy signal 懶加載範例
+      observable-signal/   // signal 與 observable 互轉
+      signal/              // signal 基本用法與 effect
+      signal-demos/        // setTimeout、setInterval、Promise 等 signal 應用
+      signal-slice/        // signalSlice 狀態切片管理
+    shared/
+      services/
+        data.service.ts    // 範例資料服務
+  main.ts
+  styles.scss
+```
+
+## 主要技術
+- Angular 19（含 Signals API）
+- RxJS
+- ngxtension（signalSlice、connect 等輔助函式）
+- Tailwind CSS
+- 
+## 各功能模組簡介
 1. signal
 展示 signal、computed、effect 的基本用法。
 包含物件 signal、untracked、effect 監聽等進階技巧。
@@ -30,17 +50,20 @@ connect 可將 observable 或多個 stream 連接到 signal。
 8. signal-demos
 setTimeout、setInterval、Promise 等常見非同步情境下的 signal 實作。
 
-如何啟動
-啟動本地開發伺服器：
+## 指令相關
+1. 安裝相關套件：
+```
+npm install
+```
+
+2. 啟動本地開發伺服器：
 ```
 ng serve
 ```
 瀏覽器開啟 http://localhost:4200/，程式碼異動會自動重載。
 
-
-參考資源
-Angular Signals 官方文件
-RxJS 與 Signals 整合
-[ngxtension](https://ngxtension.netlify.app/utilities/signals/computed-async/)
-Angular CLI 指令
-如需更詳細的範例與說明，請參考 features 內各資料夾的 .md 文件與元件程式碼。
+## 參考資源
+- Angular Signals 官方文件
+- RxJS 與 Signals 整合
+- [ngxtension](https://ngxtension.netlify.app/utilities/signals/computed-async/)
+- Angular CLI 指令
