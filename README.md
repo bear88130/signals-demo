@@ -26,7 +26,7 @@ src/
 - RxJS
 - ngxtension（signalSlice、connect 等輔助函式）
 - Tailwind CSS
-- 
+
 ## 各功能模組簡介
 1. signal
 展示 signal、computed、effect 的基本用法。
