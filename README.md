@@ -1,5 +1,5 @@
 # SignalsDemo
-本專案為 Angular Signals 應用範例，展示 Signals 在狀態管理、非同步處理、RxJS 整合等多種情境下的實作方式。每個功能模組皆有對應的教學與實作，適合學習與參考。
+本專案為 Angular Signals 應用範例，展示 Signals 如何使用、ngxtension的實作方式。每個功能模組皆有對應的教學與實作，適合學習與參考。
 
 ## 目錄結構
 ```
