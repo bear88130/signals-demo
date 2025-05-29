@@ -60,10 +60,9 @@ npm install
 ```
 ng serve
 ```
-瀏覽器開啟 http://localhost:4200/，程式碼異動會自動重載。
+瀏覽器開啟 http://localhost:4200/
+程式碼異動會自動重載
 
 ## 參考資源
-- Angular Signals 官方文件
-- RxJS 與 Signals 整合
+- [Angular Signals 官方文件](https://angular.dev/guide/signals)
 - [ngxtension](https://ngxtension.netlify.app/utilities/signals/computed-async/)
-- Angular CLI 指令
